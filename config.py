@@ -2,7 +2,7 @@ import numpy as np
 
 
 class RateSensor:
-    def __init__(self, name='', out=None, ref=None, temper=None):
+    def __init__(self, name='', out=None, ref=None, temper=None, plt_color='b-.'):
         self.out_chan = out
         self.temp_chan = temper
         self.ref_chan = ref
@@ -14,13 +14,16 @@ class RateSensor:
         self.bias = 0
         self.nonlin = 0
         self.name = name
+        self.plt_color_fmt = plt_color
+        self.out = []
+        self.bandwidth = 0
 
     def extract(self, adc_result):
-        out = adc_result[self.out_chan]
+        self.out = adc_result[self.out_chan]
         if self.ref_chan or self.ref_chan == 0:
-            out = [o - r for o, r in zip(out, adc_result[self.ref_chan])]
-        self.mean_value = np.mean(out)
-        self.std_value = np.std(out)
+            self.out = [o - r for o, r in zip(self.out, adc_result[self.ref_chan])]
+        self.mean_value = np.mean(self.out)
+        self.std_value = np.std(self.out)
         if self.temper_value:
             self.temper_value = np.mean(adc_result[self.temp_chan])
 
@@ -44,21 +47,20 @@ NIDAQ_ID = 'Dev5'
 ADC_RATE = 1000
 ACQUISITION_TIME = 10
 Sensors = [
-    RateSensor(name='VG910_1', out=0, temper=1),
-    RateSensor(name='VG910_2', out=2, temper=3),
-    RateSensor(name='TG100_1', out=4, ref=5, temper=6),
-    RateSensor(name='TG100_2', out=7, ref=8, temper=9),
-    RateSensor(name='CRH02', out=10, ref=11, temper=12),
-    RateSensor(name='CRS03', out=13),
-    RateSensor(name='TG19A', out=14, ref=15, temper=16),
-    RateSensor(name='CRS09', out=17, ref=18, temper=19),
-    RateSensor(name='5V', out=20)
+    RateSensor(name='VG910_1', out=0, temper=1, plt_color='b-.'),
+    RateSensor(name='VG910_2', out=2, temper=3, plt_color='r-.'),
+    RateSensor(name='TG100_1', out=4, ref=5, temper=6, plt_color='g-.'),
+    RateSensor(name='TG100_2', out=7, ref=8, temper=9, plt_color='y-.'),
+    RateSensor(name='CRH02', out=10, ref=11, temper=12, plt_color='b*'),
+    RateSensor(name='CRS03', out=13, plt_color='k*'),
+    RateSensor(name='TG19A', out=14, ref=15, temper=16, plt_color='m*'),
+    RateSensor(name='CRS09', out=17, ref=18, temper=19, plt_color='c*'),
+    RateSensor(name='5V', out=20, plt_color='g*')
 ]
 
 # static test plan
-MAX_RATE = 100
-RATE_STEP = 20
-TEST_RATES = [r for r in range(-MAX_RATE, MAX_RATE + RATE_STEP, RATE_STEP)]
-SENSORS_COLOR = ['b-.', 'r-.', 'g-.', 'y-.', 'b*', 'k*', 'm*', 'c*', 'g*']
+MAX_RATE = [100, 75]
+RATE_STEP = [20, 15]
 
-
+# bandwidth test plan
+rate_bandw = 50

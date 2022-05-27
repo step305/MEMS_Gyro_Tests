@@ -1,4 +1,4 @@
-import backend.static_test as static_test
+import backend.bandwidth as bandwidth_test
 import config
 import datetime
 import os
@@ -15,13 +15,12 @@ if __name__ == '__main__':
                                                                     now_date.minute))
     if not os.path.isdir(result_path):
         os.mkdir(result_path)
-    result_path = os.path.join(result_path, 'static')
+    result_path = os.path.join(result_path, 'bandwidth')
     if not os.path.isdir(result_path):
         os.mkdir(result_path)
-    for max_rate, rate_step in zip(config.MAX_RATE, config.RATE_STEP):
-        static_test.static_test(max_rate=max_rate,
-                                step_rate=rate_step,
-                                result_path=os.path.join(result_path, '{:0.1f}'.format(max_rate)))
+    print('Go')
+    bandwidth_test.bandwidth_test(max_rate=config.rate_bandw,
+                                  result_path=result_path)
 
     print('Press Enter to exit...')
     input()
