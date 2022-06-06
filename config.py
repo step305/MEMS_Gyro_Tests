@@ -1,4 +1,7 @@
 import numpy as np
+import os
+
+SENSORS_DATABASE = os.path.abspath(os.path.join(os.path.curdir, 'database', 'database.db'))
 
 
 class RateSensor:

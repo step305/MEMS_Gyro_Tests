@@ -7,9 +7,10 @@ import drivers.RateTable as RateTable
 import time
 import datetime
 import config
+from backend import database
 
 
-def static_test(max_rate=100, step_rate=20, result_path='result'):
+def static_test(max_rate=100, step_rate=20, result_path='result', temperature=999):
     rate_range = [r for r in range(-max_rate, max_rate + step_rate, step_rate)]
     result_full_path = os.path.abspath(result_path)
     if not os.path.isdir(result_full_path):
@@ -85,6 +86,13 @@ def static_test(max_rate=100, step_rate=20, result_path='result'):
             f.write('Rate;Out,V;Nonlinearity, %;STD out, V\r\n')
             for xi, yi, wi, dxi in zip(x, y, noise, dx):
                 f.write('{:0.2f};{:0.6f};{:0.6f};{:0.6f}\r\n'.format(xi, yi, dxi, wi))
+
+    base = database.SensorsBase()
+    for sensor in config.Sensors:
+        if sensor.name == '5V':
+            continue
+        base.add_bandwidth_result(sensor, temperature)
+    del base
 
     with open(os.path.join(result_full_path, 'static_result.txt'), 'w') as report:
         report.write('Static Test Results\r\n')

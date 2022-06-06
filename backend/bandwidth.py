@@ -6,6 +6,7 @@ import time
 import datetime
 import config
 import multiprocessing as mp
+from backend import database
 
 
 def adc_process(sync_event, stop_event, result):
@@ -134,6 +135,13 @@ def bandwidth_test(max_rate=100, result_path='result'):
             sensor.bandwidth = 500
         else:
             sensor.bandwidth = 1.0 / (te - t0)
+
+    base = database.SensorsBase()
+    for sensor in sensor_data:
+        if sensor.name == '5V':
+            continue
+        base.add_bandwidth_result(sensor, 999)
+    del base
 
     with open(os.path.join(result_full_path, 'bandwidth.txt'), 'w') as report:
         report.write('Bandwidth Test Results\r\n')
