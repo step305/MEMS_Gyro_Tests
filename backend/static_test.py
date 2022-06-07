@@ -1,9 +1,9 @@
 import os
 import matplotlib.pyplot as plt
 import numpy as np
-import drivers.PSU as PSU
-import drivers.NIDAQ as NIDAQ
-import drivers.RateTable as RateTable
+from drivers import PSU
+from drivers import NIDAQ
+from drivers import RateTable
 import time
 import datetime
 import config

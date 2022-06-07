@@ -1,7 +1,7 @@
 import os
 import matplotlib.pyplot as plt
 import numpy as np
-import drivers.PSU as PSU
+from drivers import PSU
 import time
 import datetime
 import config

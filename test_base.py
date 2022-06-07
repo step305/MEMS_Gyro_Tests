@@ -1,4 +1,4 @@
-import backend.database as database
+from backend import database
 import os
 import config
 

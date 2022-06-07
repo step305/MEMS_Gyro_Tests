@@ -46,6 +46,7 @@ RATE_TABLE_BAUD_RATE = 38400
 
 # Thermo (climatic) camera configuration
 THERMO_PORT = 'COM15'
+THERMO_BAUDRATE = 9600
 
 # NIDAQ configuration
 ADC_CHANNELS = [0, 8, 1, 9, 3, 11, 5, 4, 12, 13, 6, 14, 7, 15, 16, 24, 18, 17, 25, 26, 20]
@@ -70,3 +71,8 @@ RATE_STEP = [20, 15]
 
 # bandwidth test plan
 rate_bandw = 50
+
+# temperature points test plan
+TEMPERATURE_POINTS = [-50, -40, -20, 0, 20, 40, 60, 85]
+TEMPERATURE_POINT_TOLERANCE = 0.3
+TIME_HOLD_ON_TEMPERATURE = 30  # minutes

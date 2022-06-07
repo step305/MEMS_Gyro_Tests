@@ -1,7 +1,8 @@
-import backend.static_test as static_test
+from backend import static_test
 import config
 import datetime
 import os
+
 
 if __name__ == '__main__':
     now_date = datetime.datetime.now()

@@ -1,4 +1,4 @@
-import backend.bandwidth as bandwidth_test
+from backend import bandwidth_test
 import config
 import datetime
 import os

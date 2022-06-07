@@ -1,4 +1,4 @@
-import drivers.PSU as PSU
+from drivers import PSU
 import config
 
 if __name__ == '__main__':
