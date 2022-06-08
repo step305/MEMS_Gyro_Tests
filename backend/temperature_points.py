@@ -54,7 +54,7 @@ def temperature_points_test(temperature_points=(-40, 0, 20, 85)):
                                                          config.TIME_HOLD_ON_TEMPERATURE),
                   end='\r')
 
-        result_point_path = os.path.join(result_path, '{:.1}f'.format(temperature_point))
+        result_point_path = os.path.join(result_path, '{:.1f}'.format(temperature_point))
         if not os.path.isdir(result_point_path):
             os.mkdir(result_point_path)
 
