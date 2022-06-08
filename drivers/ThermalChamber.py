@@ -1,9 +1,10 @@
 import time
 import serial
 
-DEFAULT_PORT = 'COM15'
-DEFAULT_BAUDRATE = 9600
+DEFAULT_PORT = 'COM10'
+DEFAULT_BAUDRATE = 19200
 SERIAL_WAIT = 1
+CHAMBER_CHANNEL = 1
 
 
 class ThermalChamber:
@@ -22,17 +23,20 @@ class ThermalChamber:
         """
         if self.serial.inWaiting() > 0:
             self.serial.read(self.serial.inWaiting())
-        self.serial.write('$01I\r'.encode())
+        self.serial.write('{:d},TEMP?\n'.format(CHAMBER_CHANNEL).encode())
         time.sleep(SERIAL_WAIT)
-        resp = self.serial.read(self.serial.inWaiting()).decode().split(' ')
-        return float(resp[1])
+        resp = self.serial.read(self.serial.inWaiting()).decode().split('\n')
+        resp = resp[1].split(',')
+        return float(resp[0])
 
     def set_temperature(self, temperature):
         """
         set target temperature in chamber and run
         """
-        command = '$01E {:.1f} 0010.0 0000.0 0000.0 0000.0 0000.0 0010.0 ' \
-                  '01010101010101010000000000000000\r'.format(temperature)
+        command = '{:d},TEMP,S{:.1f}\n'.format(CHAMBER_CHANNEL, temperature)
+        self.serial.write(command.encode())
+        time.sleep(SERIAL_WAIT)
+        command = '{:d},MODE,CONSTANT\n'.format(CHAMBER_CHANNEL)
         self.serial.write(command.encode())
         time.sleep(SERIAL_WAIT)
 
@@ -40,7 +44,7 @@ class ThermalChamber:
         """
         stop chamber
         """
-        command = '$01E 23.0 0010.0 0000.0 0000.0 0000.0 0000.0 0010.0 00010101010101010000000000000000\r'
+        command = '{:d},MODE,OFF\n'.format(CHAMBER_CHANNEL)
         self.serial.write(command.encode())
         time.sleep(SERIAL_WAIT)
 
@@ -56,7 +60,7 @@ if __name__ == '__main__':
     print('Current temperature is {:.2f} Celsium degrees'.format(thermal_chamber.get_temperature()))
     print('Setting 40 Celsium degrees and run')
     thermal_chamber.set_temperature(temperature=40.0)
-    time.sleep(5)
+    time.sleep(15)
     print('Current temperature is {:.2f} Celsium degrees'.format(thermal_chamber.get_temperature()))
     print('Stopping chamber')
     thermal_chamber.off()
