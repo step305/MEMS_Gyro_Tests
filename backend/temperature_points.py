@@ -32,7 +32,7 @@ def temperature_points_test(temperature_points=(-40, 0, 20, 85)):
         print()
         print('Setting next temperature point = {:.1f}'.format(temperature_point))
         while abs(act_temperature - temperature_point) > config.TEMPERATURE_POINT_TOLERANCE:
-            time.sleep(secs=60)
+            time.sleep(60)
             act_temperature = temperature_chamber.get_temperature()
             sys.stdout.write("\033[K")  # clear line
             print('Target temperature = {:0.1f} '
@@ -43,7 +43,7 @@ def temperature_points_test(temperature_points=(-40, 0, 20, 85)):
         print('Hold on temperature point = {:0.1f}'.format(temperature_point))
         t0 = time.time()
         while (time.time() - t0) < config.TIME_HOLD_ON_TEMPERATURE * 60:
-            time.sleep(secs=60)
+            time.sleep(60)
             act_temperature = temperature_chamber.get_temperature()
             sys.stdout.write("\033[K")  # clear line
             print('Target temperature = {:0.1f} '
@@ -54,7 +54,7 @@ def temperature_points_test(temperature_points=(-40, 0, 20, 85)):
                                                          config.TIME_HOLD_ON_TEMPERATURE),
                   end='\r')
 
-        result_point_path = os.path.join(result_path, '{:.1}f'.format(temperature_point))
+        result_point_path = os.path.join(result_path, '{:.1f}'.format(temperature_point))
         if not os.path.isdir(result_point_path):
             os.mkdir(result_point_path)
 
@@ -69,4 +69,3 @@ def temperature_points_test(temperature_points=(-40, 0, 20, 85)):
 
         print('Static test done!')
     print('Temperature test done!')
-

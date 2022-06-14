@@ -91,7 +91,7 @@ def static_test(max_rate=100, step_rate=20, result_path='result', temperature=99
     for sensor in config.Sensors:
         if sensor.name == '5V':
             continue
-        base.add_bandwidth_result(sensor, temperature)
+        base.add_static_result(sensor, temperature)
     del base
 
     with open(os.path.join(result_full_path, 'static_result.txt'), 'w') as report:

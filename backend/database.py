@@ -4,7 +4,7 @@ import sqlite3
 
 
 class SensorsBase:
-    def __init__(self, path_to_base='database.db'):
+    def __init__(self, path_to_base='database\\database.db'):
         try:
             print('connecting')
             self.base_connection = sqlite3.connect(path_to_base)
