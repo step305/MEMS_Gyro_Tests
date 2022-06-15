@@ -77,8 +77,8 @@ def static_test(max_rate=100, step_rate=20, result_path='result', temperature=99
         noise = [k[2] for k in sensor.history]
 
         p = np.polyfit(x, y, 1)
-        sensor.scale = p[0]
-        sensor.bias = p[1]
+        sensor.scale = p[0] * 1000.0
+        sensor.bias = p[1] / p[0]
         dx = [iy - (p[0] * ix + p[1]) for ix, iy in zip(x, y)]
         dx = [dxi / np.abs(p[0]) / max(rate_range) * 100.0 for dxi in dx]
         sensor.nonlin = np.max(np.abs(dx))
@@ -91,7 +91,7 @@ def static_test(max_rate=100, step_rate=20, result_path='result', temperature=99
     for sensor in config.Sensors:
         if sensor.name == '5V':
             continue
-        base.add_static_result(sensor, temperature)
+        base.add_static_result(sensor, temperature, max_rate)
     del base
 
     with open(os.path.join(result_full_path, 'static_result.txt'), 'w') as report:
@@ -103,8 +103,8 @@ def static_test(max_rate=100, step_rate=20, result_path='result', temperature=99
             if sensor.name == '5V':
                 continue
             report.write(sensor.name + '\r\n')
-            report.write('Scale Factor = {:0.3f}mV/dps\r\n'.format(sensor.scale * 1000.0))
-            report.write('Bias = {:0.3f}dps\r\n'.format(sensor.bias / sensor.scale))
+            report.write('Scale Factor = {:0.3f}mV/dps\r\n'.format(sensor.scale))
+            report.write('Bias = {:0.3f}dps\r\n'.format(sensor.bias))
             report.write('Nonlinearity = {:0.3f}%\r\n'.format(sensor.nonlin))
             report.write('Noise = {:0.3f}dps\r\n'.format(sensor.history[
                                                       int(len(rate_range)/2 + 0.5)

@@ -140,7 +140,7 @@ def bandwidth_test(max_rate=100, result_path='result'):
     for sensor in sensor_data:
         if sensor.name == '5V':
             continue
-        base.add_bandwidth_result(sensor, 999)
+        base.add_bandwidth_result(sensor, 999, max_rate)
     del base
 
     with open(os.path.join(result_full_path, 'bandwidth.txt'), 'w') as report:

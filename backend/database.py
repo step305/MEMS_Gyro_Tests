@@ -22,6 +22,7 @@ class SensorsBase:
                       'date TIMESTAMP NOT NULL,' \
                       'bandwidth REAL NOT NULL,' \
                       'temperature REAL NOT NULL,' \
+                      'rate_max REAL NOT NULL,' \
                       'data BLOB);'
             self.cursor.execute(sql_req)
             self.base_connection.commit()
@@ -32,6 +33,7 @@ class SensorsBase:
                       'bias REAL NOT NULL,' \
                       'nonlin REAL NOT NULL,' \
                       'temperature REAL NOT NULL,' \
+                      'rate_max REAL NOT NULL,' \
                       'data BLOB);'
             self.cursor.execute(sql_req)
             self.base_connection.commit()
@@ -40,26 +42,27 @@ class SensorsBase:
         except sqlite3.Error as error:
             print('Error during connection to database:', error)
 
-    def add_static_result(self, sensor, temperature):
+    def add_static_result(self, sensor, temperature, rate_max):
         self.cursor = self.base_connection.cursor()
         sql_req = 'INSERT OR IGNORE INTO sensors (name) VALUES (?);'
         self.cursor.execute(sql_req, (sensor.name,))
-        sql_req = 'INSERT INTO static_results (name, date, scale, bias, nonlin, data, temperature) ' \
-                  'VALUES (?, ?, ?, ?, ?, ?, ?);'
+        sql_req = 'INSERT INTO static_results (name,date, scale, ' \
+                  'bias, nonlin, rate_max, data, temperature) ' \
+                  'VALUES (?, ?, ?, ?, ?, ?, ?, ?);'
         self.cursor.execute(sql_req, (sensor.name, datetime.datetime.now(),
-                                      sensor.scale, sensor.bias, sensor.nonlin,
+                                      sensor.scale, sensor.bias, sensor.nonlin, rate_max,
                                       pickle.dumps(sensor.history), temperature))
         self.base_connection.commit()
         self.cursor.close()
 
-    def add_bandwidth_result(self, sensor, temperature):
+    def add_bandwidth_result(self, sensor, temperature, rate):
         self.cursor = self.base_connection.cursor()
         sql_req = 'INSERT OR IGNORE INTO sensors (name) VALUES (?);'
         self.cursor.execute(sql_req, (sensor.name,))
-        sql_req = 'INSERT INTO bandwidth_result (name, date, bandwidth, data, temperature) ' \
-                  'VALUES (?, ?, ?, ?, ?);'
+        sql_req = 'INSERT INTO bandwidth_result (name, date, bandwidth, rate_max, data, temperature) ' \
+                  'VALUES (?, ?, ?, ?, ?, ?);'
         self.cursor.execute(sql_req, (sensor.name, datetime.datetime.now(),
-                                      sensor.bandwidth,
+                                      sensor.bandwidth, rate,
                                       pickle.dumps(sensor.out), temperature))
         self.base_connection.commit()
         self.cursor.close()
