@@ -51,7 +51,7 @@ def rate_table_process(test_rate, sync_event, stop_event):
     del rate_table
 
 
-def bandwidth_test(max_rate=100, result_path='result'):
+def bandwidth_test(test_id, max_rate=100, result_path='result'):
     step_rate_event = mp.Event()
     step_rate_event.clear()
     ready_event = mp.Event()
@@ -64,6 +64,9 @@ def bandwidth_test(max_rate=100, result_path='result'):
     temp_results = os.path.join(result_full_path, 'temp_results')
     if not os.path.isdir(temp_results):
         os.mkdir(temp_results)
+
+    for sensor in config.Sensors:
+        sensor.reset_results()
 
     print('Entry')
     psu = PSU.PSU(port=config.PSU_PORT,
@@ -140,7 +143,7 @@ def bandwidth_test(max_rate=100, result_path='result'):
     for sensor in sensor_data:
         if sensor.name == '5V':
             continue
-        base.add_bandwidth_result(sensor, 999, max_rate)
+        base.add_bandwidth_result(test_id, config.TEST_TYPE, sensor,  999, max_rate)
     del base
 
     with open(os.path.join(result_full_path, 'bandwidth.txt'), 'w') as report:

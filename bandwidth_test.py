@@ -1,4 +1,5 @@
-from backend import bandwidth_test
+from backend import bandwidth
+from backend import database
 import config
 import datetime
 import os
@@ -19,8 +20,13 @@ if __name__ == '__main__':
     if not os.path.isdir(result_path):
         os.mkdir(result_path)
     print('Go')
-    bandwidth_test.bandwidth_test(max_rate=config.rate_bandw,
-                                  result_path=result_path)
+    d = database.SensorsBase()
+    d.start_new_test()
+    test_id = d.get_last_test_id()
+    del d
+    bandwidth.bandwidth_test(test_id,
+                             max_rate=config.rate_bandw,
+                             result_path=result_path)
 
     print('Press Enter to exit...')
     input()

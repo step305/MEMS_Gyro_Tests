@@ -10,14 +10,17 @@ import config
 from backend import database
 
 
-def static_test(max_rate=100, step_rate=20, result_path='result', temperature=999):
+def static_test(test_id, max_rate=100, step_rate=20, result_path='result', temperature=999):
     rate_range = [r for r in range(-max_rate, max_rate + step_rate, step_rate)]
     result_full_path = os.path.abspath(result_path)
     if not os.path.isdir(result_full_path):
         os.mkdir(result_full_path)
-    temp_results =os.path.join(result_full_path, 'temp_results')
+    temp_results = os.path.join(result_full_path, 'temp_results')
     if not os.path.isdir(temp_results):
         os.mkdir(temp_results)
+
+    for sensor in config.Sensors:
+        sensor.reset_results()
 
     psu = PSU.PSU(port=config.PSU_PORT,
                   baud_rate=config.PSU_BAUD_RATE,
@@ -91,7 +94,8 @@ def static_test(max_rate=100, step_rate=20, result_path='result', temperature=99
     for sensor in config.Sensors:
         if sensor.name == '5V':
             continue
-        base.add_static_result(sensor, temperature, max_rate)
+        base.add_static_result(test_id, config.TEST_TYPE, sensor, temperature, max_rate,
+                               thermal_test_flag=temperature != 999)
     del base
 
     with open(os.path.join(result_full_path, 'static_result.txt'), 'w') as report:
@@ -107,8 +111,8 @@ def static_test(max_rate=100, step_rate=20, result_path='result', temperature=99
             report.write('Bias = {:0.3f}dps\r\n'.format(sensor.bias))
             report.write('Nonlinearity = {:0.3f}%\r\n'.format(sensor.nonlin))
             report.write('Noise = {:0.3f}dps\r\n'.format(sensor.history[
-                                                      int(len(rate_range)/2 + 0.5)
-                                                  ][2] / sensor.scale))
+                                                             int(len(rate_range) / 2 + 0.5)
+                                                         ][2] / sensor.scale))
             report.write('*' * 40)
             report.write('\r\n')
             report.write('\r\n')
