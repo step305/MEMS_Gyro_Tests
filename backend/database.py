@@ -2,6 +2,9 @@ import datetime
 import pickle
 import sqlite3
 
+# SELECT ifnull(MAX(count) ,0) FROM test_id
+# INSERT INTO test_id (count) VALUES ((SELECT ifnull(MAX(count) ,0) FROM test_id) + 10)
+
 
 class SensorsBase:
     def __init__(self, path_to_base='database\\database.db'):
