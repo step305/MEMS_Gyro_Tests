@@ -118,17 +118,17 @@ def bandwidth_test(test_id, max_rate=100, result_path='result'):
         if sensor.name == '5V':
             continue
         w = np.abs(sensor.out)
-        w0 = np.mean(w[config.ADC_RATE * 0.5:config.ADC_RATE * 2])
-        we = np.mean(w[-config.ADC_RATE * 2:-config.ADC_RATE * 0.5])
+        w0 = np.mean(w[int(config.ADC_RATE * 0.5):int(config.ADC_RATE * 2)])
+        we = np.mean(w[int(-config.ADC_RATE * 2):int(-config.ADC_RATE * 0.5)])
         uL = w0 + (we - w0) * 0.2
         uH = w0 + (we - w0) * 0.8
-        te = np.argwhere(np.abs(np.array(w[-config.ADC_RATE::-1])) < uH)
+        te = np.argwhere(np.abs(np.array(w[int(-config.ADC_RATE)::-1])) < uH)
         if te.size > 0:
             te = int(te[0]) / config.ADC_RATE
         else:
             te = 9.8
 
-        t0 = np.argwhere(np.abs(np.array(w[-config.ADC_RATE::-1])) < uL)
+        t0 = np.argwhere(np.abs(np.array(w[int(-config.ADC_RATE)::-1])) < uL)
         if t0.size > 0:
             t0 = int(t0[0]) / config.ADC_RATE
         else:
