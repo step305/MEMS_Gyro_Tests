@@ -3,3 +3,5 @@ nidaqmx~=0.5.8
 numpy~=1.22.1
 pyserial~=3.4
 matplotlib~=3.2.1
+AllanTools~=2019.9
+scipy~=1.4.1

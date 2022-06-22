@@ -39,6 +39,14 @@ class RateSensor:
         self.bandwidth = 0
         self.test_type = TEST_TYPE
         self.comment = comment
+        self.long_therm_out = []
+        self.arw = 0
+        self.bias_instability = 0
+        self.adev = []
+        self.tau = []
+
+    def add_long_therm(self, data):
+        self.long_therm_out.extend(data)
 
     def extract(self, adc_result):
         self.out = adc_result[self.out_chan]
@@ -62,7 +70,14 @@ class RateSensor:
         self.bias = 9
         self.nonlin = 0
         self.out = []
+        self.long_therm_out = []
 
+    def __str__(self):
+        return 'Sensor {}, serial num {}: scale={:.3f}mV/dps, bias={:.3f}dps, nonlin={:.2f}%'.format(self.name,
+                                                                                                     self.id,
+                                                                                                     self.scale,
+                                                                                                     self.bias,
+                                                                                                     self.nonlin)
 
 # PSU configuration
 PSU_PORT = 'COM28'
@@ -106,3 +121,6 @@ rate_bandw = 50
 TEMPERATURE_POINTS = [-50, -40, -20, 0, 20, 40, 60, 85]
 TEMPERATURE_POINT_TOLERANCE = 0.3
 TIME_HOLD_ON_TEMPERATURE = 30  # minutes
+
+# stability test plan
+DURATION = 3600

@@ -106,7 +106,7 @@ def static_test(test_id, max_rate=100, step_rate=20, result_path='result', tempe
         for sensor in config.Sensors:
             if sensor.name == '5V':
                 continue
-            report.write(sensor.name + '\r\n')
+            report.write(sensor.name + ': ' + sensor.id + '\r\n')
             report.write('Scale Factor = {:0.3f}mV/dps\r\n'.format(sensor.scale))
             report.write('Bias = {:0.3f}dps\r\n'.format(sensor.bias))
             report.write('Nonlinearity = {:0.3f}%\r\n'.format(sensor.nonlin))

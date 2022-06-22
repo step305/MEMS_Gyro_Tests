@@ -156,7 +156,7 @@ def bandwidth_test(test_id, max_rate=100, result_path='result'):
         for sensor in sensor_data:
             if sensor.name == '5V':
                 continue
-            report.write(sensor.name + '\r\n')
+            report.write(sensor.name + ': ' + sensor.id + '\r\n')
             report.write('Bandwidth = {:0.3f}Hz\r\n'.format(sensor.bandwidth))
             report.write('*' * 40)
             report.write('\r\n')

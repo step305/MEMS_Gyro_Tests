@@ -4,6 +4,7 @@ import sqlite3
 
 # SELECT ifnull(MAX(count) ,0) FROM test_id
 # INSERT INTO test_id (count) VALUES ((SELECT ifnull(MAX(count) ,0) FROM test_id) + 10)
+import config
 
 
 class SensorsBase:
@@ -149,10 +150,10 @@ class SensorsBase:
             self.cursor = self.base_connection.cursor()
             sql_req = 'INSERT OR IGNORE INTO sensors (name, sensor_id) VALUES (?, ?);'
             self.cursor.execute(sql_req, (sensor.name, sensor.id))
-            sql_req = 'INSERT INTO bandwidth_result (name, test_id, date, ' \
+            sql_req = 'INSERT INTO bandwidth_result (name, sensor_id, test_id, date, ' \
                       'bandwidth, rate_max, data, temperature, test_type, comment) ' \
-                      'VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);'
-            self.cursor.execute(sql_req, (sensor.name, test_id, datetime.datetime.now(),
+                      'VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);'
+            self.cursor.execute(sql_req, (sensor.name, sensor.id, test_id, datetime.datetime.now(),
                                           sensor.bandwidth, rate,
                                           pickle.dumps(sensor.out), temperature,
                                           test_type, sensor.comment))
@@ -160,6 +161,21 @@ class SensorsBase:
             self.cursor.close()
         except sqlite3.Error as error:
             print('Error during storing bandwidth test results to database: ', error)
+
+    def add_stability_result(self, test_id, test_type, sensor, temperature):
+        try:
+            self.cursor = self.base_connection.cursor()
+            sql_req = 'INSERT INTO stability_results (name, sensor_id, test_id, date, ' \
+                      'arw, bias_instabiluty, temperature, test_type, comment, data) ' \
+                      'VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);'
+            self.cursor.execute(sql_req, (sensor.name, sensor.id, test_id, datetime.datetime.now(),
+                                          sensor.arw, sensor.bias_instability,
+                                          temperature, test_type, sensor.comment,
+                                          pickle.dumps([sensor.long_therm_out, sensor.tau, sensor.adev])))
+            self.base_connection.commit()
+            self.cursor.close()
+        except sqlite3.Error as error:
+            print('Error during storing stability test results to database: ', error)
 
     def start_new_test(self):
         try:
@@ -184,6 +200,21 @@ class SensorsBase:
             return test_id
         except sqlite3.Error as error:
             print('Error during storing new test ID to database: ', error)
+
+    def get_sensor_params(self, sensor_name, sensor_id):
+        try:
+            sensor = config.RateSensor(name=sensor_name, sensor_id=sensor_id)
+            self.cursor = self.base_connection.cursor()
+            sql_req = 'SELECT scale, bias, nonlin FROM sensor_datasheet WHERE name=? AND sensor_id=?;'
+            self.cursor.execute(sql_req, (sensor_name, sensor_id))
+            params = self.cursor.fetchone()
+            scale, bias, nonlin = params
+            sensor.scale = scale
+            sensor.bias = bias
+            sensor.nonlin = nonlin
+            return sensor
+        except sqlite3.Error as error:
+            print('Error during fetching sensor parameters from datasheet', sensor_name, sensor_id, error)
 
     def update_sensor_datasheets(self):
         try:
