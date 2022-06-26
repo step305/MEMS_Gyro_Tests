@@ -95,15 +95,8 @@ class PSU:
         self.serial.write(':OUTP:STAT 0\n'.encode())
         time.sleep(SERIAL_WAIT)
 
-    def close(self):
-        """
-        closes PSU serial port
-        """
-        self.off()
-        self.serial.close()
-
     def __del__(self):
-        self.close()
+        self.serial.close()
 
 
 if __name__ == '__main__':

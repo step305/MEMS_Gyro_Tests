@@ -3,7 +3,6 @@ from backend import static_test
 import config
 import os
 import time
-import sys
 import datetime
 
 TIME_HOLD_ON_TEMPERATURE = 30  # minutes
