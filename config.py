@@ -17,11 +17,13 @@ class RateSensor:
     def __init__(self,
                  name='',
                  sensor_id='',
+                 nominal_range=100,
                  out=None,
                  ref=None,
                  temper=None,
                  comment='',
                  plt_color='b-.'):
+        self.nominal_range = nominal_range
         self.out_chan = out
         self.temp_chan = temper
         self.ref_chan = ref
@@ -99,20 +101,29 @@ NIDAQ_ID = 'Dev5'
 ADC_RATE = 1000
 ACQUISITION_TIME = 10
 Sensors = [
-    RateSensor(name='VG910', sensor_id='1', out=0, temper=1, comment='Fizoptika', plt_color='b-.'),
-    RateSensor(name='VG910', sensor_id='2', out=2, temper=3, comment='Fizoptika', plt_color='r-.'),
-    RateSensor(name='TG100', sensor_id='1', out=4, ref=5, temper=6, comment='MPLab', plt_color='g-.'),
-    RateSensor(name='TG100', sensor_id='2', out=7, ref=8, temper=9, comment='MPLab', plt_color='y-.'),
-    RateSensor(name='CRH02', sensor_id='0', out=10, ref=11, temper=12, comment='SiliconSensing', plt_color='b*'),
-    RateSensor(name='CRS03', sensor_id='0', out=13, comment='SiliconSensing', plt_color='k*'),
-    RateSensor(name='TG19A', sensor_id='0', out=14, ref=15, temper=16, comment='SiliconSensing', plt_color='m*'),
-    RateSensor(name='CRS09', sensor_id='0', out=17, ref=18, temper=19, comment='MPLab', plt_color='c*'),
-    RateSensor(name='5V', sensor_id='-1', out=20, comment='power rail', plt_color='g*')
+    RateSensor(name='VG910', sensor_id='1', nominal_range=100,
+               out=0, temper=1, comment='Fizoptika', plt_color='b-.'),
+    RateSensor(name='VG910', sensor_id='2', nominal_range=100,
+               out=2, temper=3, comment='Fizoptika', plt_color='r-.'),
+    RateSensor(name='TG100', sensor_id='1', nominal_range=100,
+               out=4, ref=5, temper=6, comment='MPLab', plt_color='g-.'),
+    RateSensor(name='TG100', sensor_id='2', nominal_range=100,
+               out=7, ref=8, temper=9, comment='MPLab', plt_color='y-.'),
+    RateSensor(name='CRH02', sensor_id='0', nominal_range=100,
+               out=10, ref=11, temper=12, comment='SiliconSensing', plt_color='b*'),
+    RateSensor(name='CRS03', sensor_id='0', nominal_range=100,
+               out=13, comment='SiliconSensing', plt_color='k*'),
+    RateSensor(name='TG19A', sensor_id='0', nominal_range=100,
+               out=14, ref=15, temper=16, comment='SiliconSensing', plt_color='m*'),
+    RateSensor(name='CRS09', sensor_id='0', nominal_range=100,
+               out=17, ref=18, temper=19, comment='MPLab', plt_color='c*'),
+    RateSensor(name='5V', sensor_id='-1', nominal_range=100,
+               out=20, comment='power rail', plt_color='g*')
 ]
 
 # static test plan
 MAX_RATE = [100, 75]
-RATE_STEP = [20, 15]
+RATE_STEP = [i/5 for i in MAX_RATE]
 
 # bandwidth test plan
 rate_bandw = 50

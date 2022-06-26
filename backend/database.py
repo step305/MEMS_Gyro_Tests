@@ -1,9 +1,7 @@
 import datetime
 import pickle
 import sqlite3
-
-# SELECT ifnull(MAX(count) ,0) FROM test_id
-# INSERT INTO test_id (count) VALUES ((SELECT ifnull(MAX(count) ,0) FROM test_id) + 10)
+import pickle
 import config
 
 
@@ -212,9 +210,43 @@ class SensorsBase:
             sensor.scale = scale
             sensor.bias = bias
             sensor.nonlin = nonlin
+            sql_req = 'SELECT bandwidth, MAX(date) ' \
+                      'FROM bandwidth_result WHERE name = ? AND sensor_id = ?;'
+            self.cursor.execute(sql_req, (sensor_name, sensor_id))
+            params = self.cursor.fetchone()
+            bandwidth, _ = params
+            sensor.bandwidth = bandwidth
             return sensor
         except sqlite3.Error as error:
             print('Error during fetching sensor parameters from datasheet', sensor_name, sensor_id, error)
+
+    def get_sensor_static_graph(self, sensor):
+        try:
+            self.cursor = self.base_connection.cursor()
+            sql_req = 'SELECT data, MAX(date) FROM static_results WHERE name=? AND sensor_id=?;'
+            self.cursor.execute(sql_req, (sensor.name, sensor.id))
+            params = self.cursor.fetchone()
+            data_pickled, _ = params
+            data = pickle.loads(data_pickled)
+            sensor.history = data
+            return sensor
+        except sqlite3.Error as error:
+            print('Error during fetching sensor static graph', sensor.name, sensor.id, error)
+
+    def list_all_sensors(self):
+        try:
+            self.cursor = self.base_connection.cursor()
+            sql_req = 'SELECT name, sensor_id from sensors;'
+            self.cursor.execute(sql_req)
+            result = self.cursor.fetchall()
+            sensors_names = [d[0] for d in result]
+            sensors_ids = [d[1] for d in result]
+            self.base_connection.commit()
+            self.cursor.close()
+            return sensors_names, sensors_ids
+
+        except sqlite3.Error as error:
+            print('Error during updating sensors datasheet in database: ', error)
 
     def update_sensor_datasheets(self):
         try:
