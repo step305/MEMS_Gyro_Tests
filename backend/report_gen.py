@@ -59,7 +59,7 @@ def report_all_sensors():
         pdf_canvas.setLineWidth(3)
         pdf_canvas.setFont('GOST', size=14)
 
-        #renderPDF.draw(drawing, pdf_canvas, (width - 160 / 25.4 * 72) / 2, 50)
+        renderPDF.draw(drawing, pdf_canvas, 40, 150)
 
         pdf_canvas.drawCentredString(width / 2, 20, '{}.{}.{}'.format(now_date.day, now_date.month, now_date.year))
         pdf_canvas.drawCentredString(width / 2, 40, 'Лаборатория Микроприборов')
