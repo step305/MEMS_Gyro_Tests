@@ -21,6 +21,8 @@ def stability_test(test_id, duration=200, result_path='result', temperature=999)
 
     db = database.SensorsBase()
     for sensor in config.Sensors:
+        if sensor.name == '5V':
+            continue
         temp_sensor = db.get_sensor_params(sensor.name, sensor.id)
         sensor.scale = temp_sensor.scale
         sensor.bias = sensor.bias
@@ -58,17 +60,18 @@ def stability_test(test_id, duration=200, result_path='result', temperature=999)
 
     dT = config.ACQUISITION_TIME
 
-    for t in range(0, dT, duration):
+    for t in range(0, duration, dT):
         adc_data = adc.get()
         means = ''
         for sensor, line in zip(config.Sensors, plots):
             sensor.extract(adc_data)
-            sensor.add(sensor.mean_value, sensor.std_value)
+            sensor.add(t, sensor.mean_value, sensor.std_value)
             sensor.add_long_therm(sensor.out)
 
             means += '{:0.3f}V\t'.format(sensor.mean_value)
             line.set_ydata([k[1] for k in sensor.history])
             line.set_xdata([k[0] for k in sensor.history])
+            plt.xlim(0, t)
             fig.canvas.draw()
             fig.canvas.flush_events()
 

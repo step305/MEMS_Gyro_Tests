@@ -94,7 +94,7 @@ def static_test(test_id, max_rate=100, step_rate=20, result_path='result', tempe
     for sensor in config.Sensors:
         if sensor.name == '5V':
             continue
-        if not rate_range == sensor.nominal_range:
+        if not max_rate == sensor.nominal_range:
             continue
         base.add_static_result(test_id, config.TEST_TYPE, sensor, temperature, max_rate,
                                thermal_test_flag=temperature != 999)

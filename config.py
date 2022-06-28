@@ -123,7 +123,7 @@ Sensors = [
 
 # static test plan
 MAX_RATE = [100, 75]
-RATE_STEP = [i/5 for i in MAX_RATE]
+RATE_STEP = [int(i/5) for i in MAX_RATE]
 
 # bandwidth test plan
 rate_bandw = 50
