@@ -14,7 +14,8 @@ class NIDAQ:
                  dev_id=DEFAULT_DEV_ID,
                  rate=DEFAULT_RATE,
                  acq_time=DEFAULT_ACQUISITION_TIME,
-                 channels=DEFAULT_CHANNELS):
+                 channels=DEFAULT_CHANNELS,
+                 volt_range=10):
         """
         Args:
             dev_id (): String, DevID of NIDAQ
@@ -29,7 +30,7 @@ class NIDAQ:
         for channel in channels:
             self.adc_task.ai_channels.add_ai_voltage_chan('{}/ai{:d}'.format(self.dev_id, channel),
                                                           terminal_config=TerminalConfiguration.RSE,
-                                                          min_val=-10, max_val=10)
+                                                          min_val=-volt_range, max_val=volt_range)
         self.adc_task.timing.cfg_samp_clk_timing(rate=self.rate,
                                                  sample_mode=constants.AcquisitionType.FINITE,
                                                  samps_per_chan=self.samples_per_channel)
@@ -44,7 +45,46 @@ class NIDAQ:
                                   timeout=self.samples_per_channel / self.rate * 1.6)
         return data
 
-    def __del__(self):
+    def close(self):
+        self.adc_task.close()
+
+
+class NIDAQ_Alt:
+    def __init__(self,
+                 sensors,
+                 dev_id=DEFAULT_DEV_ID,
+                 rate=DEFAULT_RATE,
+                 acq_time=DEFAULT_ACQUISITION_TIME):
+        """
+        Args:
+            dev_id (): String, DevID of NIDAQ
+            rate (): sample rate, Hz
+            acq_time (): time to acquire in one point, sec
+        """
+        self.adc_task = nidaqmx.Task()
+        self.dev_id = dev_id
+        self.rate = int(rate)
+        self.samples_per_channel = int(self.rate * acq_time)
+        for sensor in sensors:
+            terminal_cfg = TerminalConfiguration.RSE if sensor.out_type == 'SE' else TerminalConfiguration.DIFFERENTIAL
+            self.adc_task.ai_channels.add_ai_voltage_chan('{}/ai{:d}'.format(self.dev_id, sensor.out),
+                                                          terminal_config=terminal_cfg,
+                                                          min_val=-sensor.volt_range, max_val=sensor.volt_range)
+        self.adc_task.timing.cfg_samp_clk_timing(rate=self.rate,
+                                                 sample_mode=constants.AcquisitionType.FINITE,
+                                                 samps_per_chan=self.samples_per_channel)
+
+    def get(self):
+        """
+        get ADC measurements
+        Returns:
+            data = list of lists^ len(data0 == len(ADC_CHANNELS), len(data[0]) == acq_time * rate
+        """
+        data = self.adc_task.read(number_of_samples_per_channel=self.samples_per_channel,
+                                  timeout=self.samples_per_channel / self.rate * 1.6)
+        return data
+
+    def close(self):
         self.adc_task.close()
 
 
@@ -53,4 +93,4 @@ if __name__ == '__main__':
     dat = adc.get()
     print([np.mean(d) for d in dat])
     print([np.std(d) for d in dat])
-    del adc
+    adc.close()

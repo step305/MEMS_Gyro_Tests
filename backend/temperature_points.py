@@ -76,6 +76,7 @@ def temperature_points_test(test_id, temperature_points=(-40, 0, 20, 85)):
                                        'Actual temperature = {:.1f}'.format(27, act_temperature))
 
     temperature_chamber.off()
+    temperature_chamber.close()
     print()
     print('Temperature test done!')
 

@@ -279,7 +279,7 @@ class SensorsBase:
         except sqlite3.Error as error:
             print('Error during updating sensors datasheet in database: ', error)
 
-    def __del__(self):
+    def close(self):
         if self.base_connection:
             self.base_connection.close()
 

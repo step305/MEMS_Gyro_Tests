@@ -49,10 +49,7 @@ class RateTable:
         time.sleep(SERIAL_WAIT)
         return float(self.serial.read(self.serial.inWaiting()).decode().split('\r\n')[1])
 
-    def __del__(self):
-        """
-        closes rate table port
-        """
+    def close(self):
         self.serial.close()
 
 
@@ -69,4 +66,4 @@ if __name__ == '__main__':
     print(rate_table.rate())
     rate_table.dis()
     print(rate_table.rate())
-    del rate_table
+    rate_table.close()

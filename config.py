@@ -22,7 +22,9 @@ class RateSensor:
                  ref=None,
                  temper=None,
                  comment='',
-                 plt_color='b-.'):
+                 plt_color='b-.',
+                 out_type='SE',
+                 volt_range=5.0):
         self.nominal_range = nominal_range
         self.out_chan = out
         self.temp_chan = temper
@@ -46,6 +48,8 @@ class RateSensor:
         self.bias_instability = 0
         self.adev = []
         self.tau = []
+        self.out_type = out_type
+        self.volt_range = volt_range
 
     def add_long_therm(self, data):
         self.long_therm_out.extend(data)
@@ -58,6 +62,11 @@ class RateSensor:
         self.std_value = np.std(self.out)
         if self.temper_value:
             self.temper_value = np.mean(adc_result[self.temp_chan])
+
+    def extract_diff(self, adc_result, indx):
+        self.out = adc_result[indx]
+        self.mean_value = np.mean(self.out)
+        self.std_value = np.std(self.out)
 
     def add(self, rate, out, stdout):
         self.history.append((rate, out, stdout))
@@ -102,23 +111,23 @@ ADC_RATE = 1000
 ACQUISITION_TIME = 10
 Sensors = [
     RateSensor(name='VG910', sensor_id='1', nominal_range=100,
-               out=0, temper=1, comment='Fizoptika', plt_color='b-.'),
+               out=0, temper=1, comment='Fizoptika', plt_color='b-.', out_type='SE', volt_range=0.2),
     RateSensor(name='VG910', sensor_id='2', nominal_range=100,
-               out=2, temper=3, comment='Fizoptika', plt_color='r-.'),
+               out=2, temper=3, comment='Fizoptika', plt_color='r-.', out_type='SE', volt_range=0.2),
     RateSensor(name='TG100', sensor_id='1', nominal_range=100,
-               out=4, ref=5, temper=6, comment='MPLab', plt_color='g-.'),
+               out=4, ref=5, temper=6, comment='MPLab', plt_color='g-.', out_type='DIFF', volt_range=0.2),
     RateSensor(name='TG100', sensor_id='2', nominal_range=100,
-               out=7, ref=8, temper=9, comment='MPLab', plt_color='y-.'),
+               out=7, ref=8, temper=9, comment='MPLab', plt_color='y-.', out_type='DIFF', volt_range=0.2),
     RateSensor(name='CRH02', sensor_id='0', nominal_range=100,
-               out=10, ref=11, temper=12, comment='SiliconSensing', plt_color='b*'),
+               out=10, ref=11, temper=12, comment='SiliconSensing', plt_color='b*', out_type='DIFF', volt_range=0.2),
     RateSensor(name='CRS03', sensor_id='0', nominal_range=100,
-               out=13, comment='SiliconSensing', plt_color='k*'),
+               out=13, comment='SiliconSensing', plt_color='k*', out_type='SE', volt_range=5),
     RateSensor(name='TG19A', sensor_id='0', nominal_range=100,
-               out=14, ref=15, temper=16, comment='SiliconSensing', plt_color='m*'),
+               out=14, ref=15, temper=16, comment='SiliconSensing', plt_color='m*', out_type='DIFF', volt_range=0.2),
     RateSensor(name='CRS09', sensor_id='0', nominal_range=100,
-               out=17, ref=18, temper=19, comment='MPLab', plt_color='c*'),
+               out=17, ref=18, temper=19, comment='MPLab', plt_color='c*', out_type='DIFF', volt_range=0.2),
     RateSensor(name='5V', sensor_id='-1', nominal_range=100,
-               out=20, comment='power rail', plt_color='g*')
+               out=20, comment='power rail', plt_color='g*', out_type='SE', volt_range=10.0)
 ]
 
 # static test plan

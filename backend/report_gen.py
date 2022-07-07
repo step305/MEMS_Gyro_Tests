@@ -84,7 +84,7 @@ def report_all_sensors():
         pdf_canvas.drawString(350, 575, '{:0.1f}Гц'.format(sensor.bandwidth))
 
         pdf_canvas.save()
-    del db
+    db.close()
 
 
 if __name__ == '__main__':

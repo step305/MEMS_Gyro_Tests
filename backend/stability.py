@@ -34,10 +34,10 @@ def stability_test(test_id, duration=200, result_path='result', temperature=999)
                   baud_rate=config.PSU_BAUD_RATE,
                   voltages=config.PSU_CHANNEL_VOLT,
                   max_currents=config.PSU_CHANNEL_MAX_CURRENT)
-    adc = NIDAQ.NIDAQ(dev_id=config.NIDAQ_ID,
-                      rate=config.ADC_RATE,
-                      acq_time=config.ACQUISITION_TIME,
-                      channels=config.ADC_CHANNELS)
+    adc = NIDAQ.NIDAQ_Alt(config.Sensors,
+                          dev_id=config.NIDAQ_ID,
+                          rate=config.ADC_RATE,
+                          acq_time=config.ACQUISITION_TIME)
 
     psu.on()
     time.sleep(25)
@@ -63,8 +63,8 @@ def stability_test(test_id, duration=200, result_path='result', temperature=999)
     for t in range(0, duration, dT):
         adc_data = adc.get()
         means = ''
-        for sensor, line in zip(config.Sensors, plots):
-            sensor.extract(adc_data)
+        for indx, sensor, line in zip(range(len(config.Sensors)), config.Sensors, plots):
+            sensor.extract_diff(adc_data, indx)
             sensor.add(t, sensor.mean_value, sensor.std_value)
             sensor.add_long_therm(sensor.out)
 
@@ -117,7 +117,7 @@ def stability_test(test_id, duration=200, result_path='result', temperature=999)
         i = np.argmin(np.abs(dlogadev - slope))
         b = logadev[i] - slope * logtau[i]
         logN = slope * np.log(1) + b
-        ARW = 10**logN
+        ARW = 10 ** logN
         sensor.arw = ARW
 
         bias_instability = np.min(adev) / 2 / np.log(2) * np.pi
@@ -148,5 +148,3 @@ def stability_test(test_id, duration=200, result_path='result', temperature=999)
     psu.off()
     del psu
     del adc
-
-

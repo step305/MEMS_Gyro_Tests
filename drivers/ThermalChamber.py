@@ -48,7 +48,7 @@ class ThermalChamber:
         self.serial.write(command.encode())
         time.sleep(SERIAL_WAIT)
 
-    def __del__(self):
+    def close(self):
         """
         closes thermal chamber port
         """
@@ -64,4 +64,4 @@ if __name__ == '__main__':
     print('Current temperature is {:.2f} Celsium degrees'.format(thermal_chamber.get_temperature()))
     print('Stopping chamber')
     thermal_chamber.off()
-    del thermal_chamber
+    thermal_chamber.close()

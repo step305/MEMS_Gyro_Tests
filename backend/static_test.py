@@ -69,7 +69,7 @@ def static_test(test_id, max_rate=100, step_rate=20, result_path='result', tempe
         print('test rate = {:0.2f}dps\tOut: '.format(rate) + means)
     rate_table.rate(0)
     rate_table.dis()
-    del rate_table
+    rate_table.close()
     plt.close()
 
     for sensor in config.Sensors:
@@ -98,7 +98,7 @@ def static_test(test_id, max_rate=100, step_rate=20, result_path='result', tempe
             continue
         base.add_static_result(test_id, config.TEST_TYPE, sensor, temperature, max_rate,
                                thermal_test_flag=temperature != 999)
-    del base
+    base.close()
 
     with open(os.path.join(result_full_path, 'static_result.txt'), 'w') as report:
         report.write('Static Test Results\r\n')
@@ -120,5 +120,5 @@ def static_test(test_id, max_rate=100, step_rate=20, result_path='result', tempe
             report.write('\r\n')
 
     psu.off()
-    del psu
-    del adc
+    psu.close()
+    adc.close()

@@ -95,7 +95,7 @@ class PSU:
         self.serial.write(':OUTP:STAT 0\n'.encode())
         time.sleep(SERIAL_WAIT)
 
-    def __del__(self):
+    def close(self):
         self.serial.close()
 
 
@@ -105,5 +105,5 @@ if __name__ == '__main__':
     psu.on()
     print(psu.get_voltage(), psu.get_currents())
     psu.off()
-    del psu
+    psu.close()
     print('Done!')

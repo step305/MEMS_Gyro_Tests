@@ -29,7 +29,7 @@ def adc_process(sync_event, stop_event, result):
     result.put(config.Sensors)
     stop_event.wait()
     print('ADC stopped')
-    del adc
+    adc.close()
 
 
 def rate_table_process(test_rate, sync_event, stop_event):
@@ -48,7 +48,7 @@ def rate_table_process(test_rate, sync_event, stop_event):
     print('Rate table stopped')
     rate_table.rate(0)
     rate_table.dis()
-    del rate_table
+    rate_table.close()
 
 
 def bandwidth_test(test_id, max_rate=100, result_path='result'):
@@ -94,7 +94,7 @@ def bandwidth_test(test_id, max_rate=100, result_path='result'):
     rate_table_proc.join()
 
     psu.off()
-    del psu
+    psu.close()
 
     plt.ion()
     fig = plt.figure()
@@ -146,7 +146,7 @@ def bandwidth_test(test_id, max_rate=100, result_path='result'):
         if sensor.name == '5V':
             continue
         base.add_bandwidth_result(test_id, config.TEST_TYPE, sensor,  999, max_rate)
-    del base
+    base.close()
 
     with open(os.path.join(result_full_path, 'bandwidth.txt'), 'w') as report:
         report.write('Bandwidth Test Results\r\n')
